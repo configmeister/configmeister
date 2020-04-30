@@ -6,8 +6,8 @@ import initApi from './api';
 export default async () => {
 	const app = express();
 
-	await initMiddlewares();
-	await initApi();
+	await initMiddlewares(app);
+	await initApi(app);
 
 	return new Promise(resolve => {
 		app.listen(config.server.port, config.server.host, resolve);

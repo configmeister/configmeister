@@ -23,9 +23,12 @@
 		"nodemon"                        : "^2.0.3",
 		"pg"                             : "^8.0.2",
 		"pg-hstore"                      : "^2.3.3",
+		"babel-plugin-import-graphql"    : "^2.7.0",
 		"sequelize"                      : "^5.21.6",
 		"uuid"                           : "^7.0.3",
 		"winston"                        : "^3.2.1",
-		"moment"                         : "^2.24.0"
+		"moment"                         : "^2.24.0",
+		"graphql"                        : "^15.0.0",
+		"express-graphql"                : "^0.9.0"
 	}
 }

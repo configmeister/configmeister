@@ -1,0 +1,18 @@
+enum ScalarType {
+    integer
+    float
+    boolean
+    string
+    nil
+}
+
+type ScalarValue {
+    id: String!
+    type: ScalarType!
+    name: String!
+    value: String!
+}
+
+type Query {
+    scalar(id: String!): ScalarValue
+}
