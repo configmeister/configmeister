@@ -4,7 +4,6 @@ const SCALAR_TYPE = {
 	BIG_NUMBER: 'bignumber',
 	STRING    : 'string',
 	BOOLEAN   : 'boolean',
-	NULL      : 'null'
 };
 
 export {
