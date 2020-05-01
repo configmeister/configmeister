@@ -6,6 +6,12 @@ const SCALAR_TYPE = {
 	BOOLEAN   : 'boolean',
 };
 
+const COMPLEX_TYPE = {
+	OBJECT: 'object',
+	ARRAY : 'array'
+};
+
 export {
-	SCALAR_TYPE
+	SCALAR_TYPE,
+	COMPLEX_TYPE
 };

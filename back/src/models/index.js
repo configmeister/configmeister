@@ -10,10 +10,10 @@ import ConfigurationVersion from './configuration-version';
 
 export default async () => {
 	// Refs to complex values
-	ComplexValueScalar.belongsTo(ScalarValue, {
+	ComplexValueScalar.belongsTo(ComplexValue, {
 		foreignKey: 'complexId'
 	});
-	ComplexValueScalar.belongsTo(ComplexValue, {
+	ComplexValueScalar.belongsTo(ScalarValue, {
 		foreignKey: 'scalarId'
 	});
 

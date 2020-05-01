@@ -1,12 +1,21 @@
 import graphqlHTTP from 'express-graphql';
 import {GraphQLSchema} from 'graphql';
-import query from './query';
-import mutation from './mutation';
+import CfgQueries from './query';
+import CfgMutations from './mutation';
 
+import {CfgScalarQuery, CfgScalarMutation} from './types/cfg-scalar';
+
+CfgScalarQuery.$appendQueries(CfgQueries);
+CfgScalarMutation.$appendQueries(CfgMutations);
+
+import {CfgComplexMutation, CfgComplexQuery} from './types/cfg-complex';
+
+CfgComplexQuery.$appendQueries(CfgQueries);
+CfgComplexMutation.$appendQueries(CfgMutations);
 
 const schema = new GraphQLSchema({
-	query,
-	mutation
+	query   : CfgQueries.$graphQlType,
+	mutation: CfgMutations.$graphQlType
 });
 
 export default async (app) => {

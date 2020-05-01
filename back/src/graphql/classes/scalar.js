@@ -13,42 +13,38 @@ async function CreateNewScalar({id, type, name, value}) {
 	});
 }
 
-class Scalar {
-	static async fromMutation(val) {
-		if (!val.id) {
-			return await Scalar.fromDb(await CreateNewScalar(val));
+class CfgScalarResolver {
+	static async createFromQuery(id) {
+		if (!id) throw new Error('Can`t get a scalar value without id');
+		const dbValue = await ScalarValue.findOne({
+			where: {id}
+		});
+		return new CfgScalarResolver(dbValue);
+	}
+
+	static async createFromMutation(value) {
+		if (!value.id) {
+			const res = await CreateNewScalar(value);
+			return new CfgScalarResolver(res);
 		}
 		const res = await ScalarValue.findOne({
 			where: {
-				id: val.id
+				id: value.id
 			}
 		});
 		if (!res) {
-			return await Scalar.fromDb(await CreateNewScalar(val));
+			const res = await CreateNewScalar(value);
+			return new CfgScalarResolver(res);
 		}
-
-		Object.entries(val).forEach(entry => {
-			res[entry[0]] = res[entry[1]];
+		Object.entries(value).forEach(entry => {
+			res.set(entry[0], entry[1]);
 		});
 		await res.save();
-		return new Scalar(res);
-	}
-
-	static async fromDb(props) {
-		return new Scalar(props);
-	}
-
-	static async fromQuery(id) {
-		if (!id) return null;
-		return Scalar.fromDb(await ScalarValue.findOne({
-			where: {
-				id
-			}
-		}));
+		return new CfgScalarResolver(res);
 	}
 
 	constructor(props) {
-		this.id = props.id || uuid();
+		this.id = props.id;
 		this.type = props.type;
 		this.name = props.name;
 		this.value = props.value;
@@ -57,4 +53,7 @@ class Scalar {
 	}
 }
 
-export default Scalar;
+export default CfgScalarResolver;
+export {
+	CreateNewScalar
+};
