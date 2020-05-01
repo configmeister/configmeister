@@ -13,6 +13,10 @@ import {CfgComplexMutation, CfgComplexQuery} from './types/cfg-complex';
 CfgComplexQuery.$appendQueries(CfgQueries);
 CfgComplexMutation.$appendQueries(CfgMutations);
 
+import {CfgBranchQuery} from './types/cfg-branch';
+
+CfgBranchQuery.$appendQueries(CfgQueries);
+
 const schema = new GraphQLSchema({
 	query   : CfgQueries.$graphQlType,
 	mutation: CfgMutations.$graphQlType

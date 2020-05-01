@@ -1,4 +1,4 @@
-import {GraphQLInputObjectType, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {GraphQLBoolean, GraphQLInputObjectType, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import CfgEnumComplexType from './cfg-enum-complex-type';
 import {CfgScalar, CfgScalarInput} from './cfg-scalar';
 import CfgTimestamp from './cfg-timestamp';
@@ -82,7 +82,7 @@ CfgComplexQuery.addQuerie({
 				type: new GraphQLNonNull(GraphQLString)
 			},
 		},
-		description: 'Get scalar value by its id',
+		description: 'Get complex value by its id',
 		resolve    : async (_, {id}) => {
 			return CfgComplexResolver.createFromQuery(id);
 		}
@@ -102,6 +102,42 @@ CfgComplexMutation.addQuerie({
 		description: 'Create or update complex value',
 		resolve    : async (_, {value}) => {
 			return CfgComplexResolver.createFromMutation(value);
+		}
+	}
+});
+CfgComplexMutation.addQuerie({
+	name : 'removeScalarFromComplex',
+	value: {
+		type   : CfgComplex,
+		args   : {
+			id      : {
+				type       : new GraphQLNonNull(GraphQLString),
+				description: 'Id of complex to remove from'
+			},
+			scalarId: {
+				type       : new GraphQLNonNull(GraphQLString),
+				description: 'Id of scalar to be removed'
+			}
+		},
+		resolve: async (_, {id, scalarId}) => {
+			return CfgComplexResolver.removeScalar(id, scalarId);
+		}
+	}
+});
+
+CfgComplexMutation.addQuerie({
+	name : 'destroyCfgComplex',
+	value: {
+		type       : GraphQLBoolean,
+		args       : {
+			id: {
+				type       : new GraphQLNonNull(GraphQLString),
+				description: 'Id of complex to be destroyed'
+			}
+		},
+		description: 'Destroy a complex by id',
+		resolve    : async (_, {id}) => {
+			return CfgComplexResolver.destroyById(id);
 		}
 	}
 });

@@ -55,6 +55,55 @@ class CfgComplexResolver {
 		return complex;
 	}
 
+	static async removeScalar(id, scalarId) {
+		await ComplexValueScalar.destroy({
+			where: {
+				complexId: id,
+				scalarId : scalarId
+			}
+		});
+		await ScalarValue.destroy({
+			where: {
+				id: scalarId
+			}
+		});
+		const dbVal = await ComplexValue.findOne({
+			where: {
+				id,
+			}
+		});
+		return new CfgComplexResolver(dbVal);
+	}
+
+	static async destroyById(id) {
+		const links = await ComplexValueScalar.findAll({
+			attributes: ['scalarId'],
+			where     : {
+				complexId: id
+			}
+		});
+		await ComplexValueScalar.destroy({
+			where: {
+				complexId: id
+			}
+		});
+
+		const promises = links.map(link => ScalarValue.destroy({
+			where: {
+				id: link.scalarId
+			}
+		}));
+		await Promise.all(promises);
+
+		await ComplexValue.destroy({
+			where: {
+				id
+			}
+		});
+
+		return true;
+	}
+
 	constructor(props) {
 		this.id = props.id;
 		this.type = props.type;

@@ -43,6 +43,15 @@ class CfgScalarResolver {
 		return new CfgScalarResolver(res);
 	}
 
+	static async destroyById(id) {
+		const res = await ScalarValue.destroy({
+			where: {
+				id
+			}
+		});
+		return true;
+	}
+
 	constructor(props) {
 		this.id = props.id;
 		this.type = props.type;

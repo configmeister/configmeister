@@ -1,4 +1,4 @@
-import {GraphQLInputObjectType, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {GraphQLBoolean, GraphQLInputObjectType, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import CfgEnumScalarType from './cfg-enum-scalar-type';
 import CfgTimestamp from './cfg-timestamp';
 import CfgBaseQuery from '../utils/cfg-base-query';
@@ -86,6 +86,22 @@ CfgScalarMutation.addQuerie({
 		description: 'Create or update a scalar value',
 		resolve    : async (_, {value}) => {
 			return CfgScalarResolver.createFromMutation(value);
+		}
+	}
+});
+CfgScalarMutation.addQuerie({
+	name : 'destroyCfgScalar',
+	value: {
+		type       : GraphQLBoolean,
+		args       : {
+			id: {
+				type       : new GraphQLNonNull(GraphQLString),
+				description: 'Id of scalar to be deleted'
+			}
+		},
+		description: 'Delete a scalar value',
+		resolve    : async (_, {id}) => {
+			return CfgScalarResolver.destroyById(id);
 		}
 	}
 });

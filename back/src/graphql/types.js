@@ -13,37 +13,6 @@
 //
 //
 //
-// const TComplexVlaue = new GraphQLObjectType({
-// 	name  : 'TComplexValue',
-// 	fields: {
-// 		id    : {
-// 			type       : GraphQLString,
-// 			description: 'Id of the complex value entry'
-// 		},
-// 		type  : {
-// 			type       : EComplexType,
-// 			description: 'Type of the complex value entry'
-// 		},
-// 		name  : {
-// 			type       : GraphQLString,
-// 			description: 'Name of the complex value entry'
-// 		},
-// 		values: {
-// 			type       : new GraphQLList(TScalarValue),
-// 			description: 'Array of values of this complex value'
-// 		},
-//
-// 		createdAt: {
-// 			type       : TimestampType,
-// 			description: 'Created at timestamp'
-// 		},
-// 		updatedAt: {
-// 			type       : TimestampType,
-// 			description: 'Updated at timestamp'
-// 		}
-// 	}
-// });
-//
 // const UValue = new GraphQLUnionType({
 // 	name       : 'UValue',
 // 	types      : [TScalarValue, TComplexVlaue],
