@@ -1,0 +1,158 @@
+# This file was generated based on ".graphqlconfig". Do not edit manually.
+
+schema {
+    query: queries
+    mutation: mutations
+}
+
+type CfgBranch {
+    "Complex values of the branch"
+    complexValues: [CfgComplex]
+    "Created at timestamp"
+    createdAt: Timestamp
+    "Id of the branch"
+    id: String
+    "Name of the branch"
+    name: String
+    "Scalar values of the branch"
+    scalarValues: [CfgScalar]
+    "Updated at timestamp"
+    updatedAt: Timestamp
+}
+
+type CfgComplex {
+    "Created at timestamp"
+    createdAt: Timestamp
+    "Id of the complex value entry"
+    id: String
+    "Name of the complex value entry"
+    name: String
+    "Type of the complex value entry"
+    type: CfgEnumComplexType
+    "Updated at timestamp"
+    updatedAt: Timestamp
+    "Array of values of this complex value"
+    values: [CfgScalar]
+}
+
+type CfgScalar {
+    "Created at timestamp"
+    createdAt: Timestamp
+    "Id of scalar value entry"
+    id: String
+    "Name of scalar value entry"
+    name: String
+    "Type of value"
+    type: CfgEnumScalarType
+    "Updated at timestamp"
+    updatedAt: Timestamp
+    "JSON value of scalar value"
+    value: String
+}
+
+type mutations {
+    "Create new or update existing branch"
+    cfgBranch(branch: CfgBranchInput): CfgBranch
+    "Create or update complex value"
+    cfgComplex(value: CfgComplexInput): CfgComplex
+    "Create or update a scalar value"
+    cfgScalar(value: CfgScalarInput!): CfgScalar
+    destroyBranch(
+        "Branch id"
+        id: String
+    ): Boolean
+    "Destroy a complex by id"
+    destroyCfgComplex(
+        "Id of complex to be destroyed"
+        id: String!
+    ): Boolean
+    "Delete a scalar value"
+    destroyCfgScalar(
+        "Id of scalar to be deleted"
+        id: String!
+    ): Boolean
+    "Remove complex value from branch (also deletes complex)"
+    removeComplexFromBranch(
+        "Branch id to remove from"
+        branchId: String,
+        "Complex id to remove"
+        id: String
+    ): Boolean
+    "Remove scalar from branch (also deletes scalar)"
+    removeScalarFromBranch(
+        "Branch id to remove from"
+        branchId: String,
+        "Scalar id to remove"
+        id: String
+    ): Boolean
+    removeScalarFromComplex(
+        "Id of complex to remove from"
+        id: String!,
+        "Id of scalar to be removed"
+        scalarId: String!
+    ): CfgComplex
+}
+
+type queries {
+    "Get branch by id"
+    cfgBranch(id: String!): CfgBranch
+    "Get complex value by its id"
+    cfgComplex(id: String!): CfgComplex
+    "Get scalar value by its id"
+    cfgScalar(id: String!): CfgScalar
+}
+
+enum CfgEnumComplexType {
+    "JS-like array"
+    array
+    "JS-like object"
+    object
+}
+
+enum CfgEnumScalarType {
+    "Boolean value"
+    boolean
+    "Float value"
+    float
+    "Integer value"
+    integer
+    "String value"
+    string
+}
+
+input CfgBranchInput {
+    "An array of complex values. They will be created automaticly if not exist"
+    complexValues: [CfgComplexInput]
+    "Id. If there is such branch, itl be update if not, new branch with this id will be created"
+    id: String
+    "Name. If updating existing branch, it is not required"
+    name: String
+    "An array of scalar values. They will be created automaticly if not exist"
+    scalarValues: [CfgScalarInput]
+}
+
+input CfgComplexInput {
+    "Id. If there is such complex value, itl be update if not, new value with this id will be created"
+    id: String
+    "Name. If updating existing value, it is not required"
+    name: String
+    "Type. If updating existing value, it is not required"
+    type: CfgEnumComplexType
+    "An array of scalar values. If the value exists, than it will be added directy or it will be created automaticly"
+    values: [CfgScalarInput]
+}
+
+input CfgScalarInput {
+    "Id. If there is such scalar value, itl be update if not, new value with this id will be created"
+    id: String
+    "Name. If updating existing value, it is not required"
+    name: String
+    "Type. If updating existing value, it is not required"
+    type: CfgEnumScalarType
+    "JSON stringyfied real value. If updating existing value, it is not required"
+    value: String
+}
+
+
+"The javascript `Date` as integer. Type represents date and time as number of milliseconds from start of UNIX epoch."
+scalar Timestamp
