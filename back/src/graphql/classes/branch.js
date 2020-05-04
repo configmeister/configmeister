@@ -5,8 +5,6 @@ import BranchProperty from '../../models/branch-property';
 import CfgComplexResolver from './complex';
 import ScalarValue from '../../models/scalar-value';
 import ComplexValue from '../../models/complex-value';
-import {where} from 'sequelize';
-import {CfgComplex} from '../types/cfg-complex';
 
 async function CreateNewBranch(branch) {
 	let {
@@ -17,7 +15,7 @@ async function CreateNewBranch(branch) {
 	} = branch;
 	id = id ? id : uuid();
 
-	const dbBranch = Branch.create({
+	const dbBranch = await Branch.create({
 		id,
 		name
 	});
@@ -25,11 +23,14 @@ async function CreateNewBranch(branch) {
 	const branchResolver = new CfgBranchResolver(dbBranch);
 	await branchResolver.addScalars(scalarValues);
 	await branchResolver.addComplexes(complexValues);
+	return branchResolver;
 }
 
 class CfgBranchResolver {
 	static async createFromQuery(id) {
-		return {};
+		return {
+			id
+		};
 	}
 
 	static async createFromMutation(branch) {
