@@ -18,6 +18,16 @@ import {CfgBranchMutation, CfgBranchQuery} from './types/cfg-branch';
 CfgBranchQuery.$appendQueries(CfgQueries);
 CfgBranchMutation.$appendQueries(CfgMutations);
 
+import {CfgVersionQuery, CfgVersionMutation} from './types/cfg-version';
+
+CfgVersionQuery.$appendQueries(CfgQueries);
+CfgVersionMutation.$appendQueries(CfgMutations);
+
+import {CfgConfigurationQuery, CfgConfigurationMutation} from './types/cfg-configuration';
+
+CfgConfigurationQuery.$appendQueries(CfgQueries);
+CfgConfigurationMutation.$appendQueries(CfgMutations);
+
 const schema = new GraphQLSchema({
 	query   : CfgQueries.$graphQlType,
 	mutation: CfgMutations.$graphQlType

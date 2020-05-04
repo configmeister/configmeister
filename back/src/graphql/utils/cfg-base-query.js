@@ -3,13 +3,13 @@ class CfgBaseQuery {
 		this.queries = [];
 	}
 
-	addQuerie(querie) {
-		this.queries.push(querie);
+	addQuery(query) {
+		this.queries.push(query);
 	}
 
 	$appendQueries(instance) {
-		this.queries.forEach(querie => {
-			instance.addField(querie);
+		this.queries.forEach(query => {
+			instance.addField(query);
 		});
 	}
 }

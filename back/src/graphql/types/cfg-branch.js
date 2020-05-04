@@ -1,37 +1,46 @@
-import {GraphQLBoolean, GraphQLInputObjectType, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString, GraphQLUnionType} from 'graphql';
+import {GraphQLBoolean, GraphQLInputObjectType, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import CfgTimestamp from './cfg-timestamp';
 import {CfgComplex, CfgComplexInput} from './cfg-complex';
 import {CfgScalar, CfgScalarInput} from './cfg-scalar';
 import CfgBaseQuery from '../utils/cfg-base-query';
 import CfgBranchResolver from '../classes/branch';
+import Branch from '../../models/branch';
 
 const CfgBranch = new GraphQLObjectType({
 	name  : 'CfgBranch',
 	fields: {
 		id           : {
-			type       : GraphQLString,
+			type       : new GraphQLNonNull(GraphQLString),
 			description: 'Id of the branch'
 		},
 		name         : {
-			type       : GraphQLString,
+			type       : new GraphQLNonNull(GraphQLString),
 			description: 'Name of the branch'
 		},
 		scalarValues : {
-			type       : new GraphQLList(CfgScalar),
+			type       : new GraphQLNonNull(new GraphQLList(CfgScalar)),
 			description: 'Scalar values of the branch',
-			resolve    : async ({id}) => {}
+			resolve    : async ({id}) => {
+				return Branch.getScalars(id);
+			}
 		},
 		complexValues: {
-			type       : new GraphQLList(CfgComplex),
+			type       : new GraphQLNonNull(new GraphQLList(CfgComplex)),
 			description: 'Complex values of the branch',
-			resolve    : async ({id}) => {}
+			resolve    : async ({id}) => {
+				return Branch.getComplex(id);
+			}
+		},
+		sourceId     : {
+			type       : new GraphQLNonNull(GraphQLString),
+			description: 'What this branch is attached to'
 		},
 		createdAt    : {
-			type       : CfgTimestamp,
+			type       : new GraphQLNonNull(CfgTimestamp),
 			description: 'Created at timestamp'
 		},
 		updatedAt    : {
-			type       : CfgTimestamp,
+			type       : new GraphQLNonNull(CfgTimestamp),
 			description: 'Updated at timestamp'
 		}
 	}
@@ -55,12 +64,16 @@ const CfgBranchInput = new GraphQLInputObjectType({
 		complexValues: {
 			type       : new GraphQLList(CfgComplexInput),
 			description: 'An array of complex values. They will be created automaticly if not exist',
+		},
+		sourceId     : {
+			type       : GraphQLString,
+			description: 'What to attach to'
 		}
 	}
 });
 
 const CfgBranchQuery = new CfgBaseQuery();
-CfgBranchQuery.addQuerie({
+CfgBranchQuery.addQuery({
 	name : 'cfgBranch',
 	value: {
 		type       : CfgBranch,
@@ -76,64 +89,23 @@ CfgBranchQuery.addQuerie({
 	}
 });
 const CfgBranchMutation = new CfgBaseQuery();
-CfgBranchMutation.addQuerie({
+CfgBranchMutation.addQuery({
 	name : 'cfgBranch',
 	value: {
 		type       : CfgBranch,
 		description: 'Create new or update existing branch',
 		args       : {
-			branch: {
-				type: CfgBranchInput
+			value: {
+				type: new GraphQLNonNull(CfgBranchInput)
 			}
 		},
-		resolve    : async (_, {branch}) => {
-			return CfgBranchResolver.createFromMutation(branch);
-		}
-	}
-});
-CfgBranchMutation.addQuerie({
-	name : 'removeScalarFromBranch',
-	value: {
-		type       : GraphQLBoolean,
-		description: 'Remove scalar from branch (also deletes scalar)',
-		args       : {
-			branchId: {
-				type       : GraphQLString,
-				description: 'Branch id to remove from'
-			},
-			id      : {
-				type       : GraphQLString,
-				description: 'Scalar id to remove'
-			}
-		},
-		resolve    : async (_, {branchId, id}) => {
-			return CfgBranchResolver.removeScalar(branchId, id);
+		resolve    : async (_, {value}) => {
+			return CfgBranchResolver.createFromMutation(value);
 		}
 	}
 });
 
-CfgBranchMutation.addQuerie({
-	name : 'removeComplexFromBranch',
-	value: {
-		type       : GraphQLBoolean,
-		description: 'Remove complex value from branch (also deletes complex)',
-		args       : {
-			branchId: {
-				type       : GraphQLString,
-				description: 'Branch id to remove from'
-			},
-			id      : {
-				type       : GraphQLString,
-				description: 'Complex id to remove'
-			}
-		},
-		resolve    : async (_, {branchId, id}) => {
-			return CfgBranchResolver.removeComplex(branchId, id);
-		}
-	}
-});
-
-CfgBranchMutation.addQuerie({
+CfgBranchMutation.addQuery({
 	name : 'destroyBranch',
 	value: {
 		type   : GraphQLBoolean,

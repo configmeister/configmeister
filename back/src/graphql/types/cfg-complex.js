@@ -4,40 +4,33 @@ import {CfgScalar, CfgScalarInput} from './cfg-scalar';
 import CfgTimestamp from './cfg-timestamp';
 import CfgBaseQuery from '../utils/cfg-base-query';
 import CfgComplexResolver from '../classes/complex';
-import ComplexValueScalar from '../../models/complex-value-scalar';
-import ScalarValue from '../../models/scalar-value';
+import ComplexValue from '../../models/complex-value';
 
 const CfgComplex = new GraphQLObjectType({
 	name  : 'CfgComplex',
 	fields: {
 		id       : {
-			type       : GraphQLString,
+			type       : new GraphQLNonNull(GraphQLString),
 			description: 'Id of the complex value entry'
 		},
 		type     : {
-			type       : CfgEnumComplexType.$grqphQlType,
+			type       : new GraphQLNonNull(CfgEnumComplexType.$grqphQlType),
 			description: 'Type of the complex value entry'
 		},
 		name     : {
-			type       : GraphQLString,
+			type       : new GraphQLNonNull(GraphQLString),
 			description: 'Name of the complex value entry'
 		},
 		values   : {
-			type       : new GraphQLList(CfgScalar),
+			type       : new GraphQLNonNull(new GraphQLList(CfgScalar)),
 			description: 'Array of values of this complex value',
 			resolve    : async (obj) => {
-				const values = await ComplexValueScalar.findAll({
-					attributes: [],
-					where     : {
-						complexId: obj.id,
-					},
-					include   : [{
-						model: ScalarValue,
-					}]
-				});
-
-				return values.map(el => el.scalar_value);
+				return ComplexValue.getScalars(obj.id);
 			}
+		},
+		sourceId : {
+			type       : new GraphQLNonNull(GraphQLString),
+			description: 'What this complex value is attached to'
 		},
 		createdAt: {
 			type       : CfgTimestamp,
@@ -53,27 +46,31 @@ const CfgComplex = new GraphQLObjectType({
 const CfgComplexInput = new GraphQLInputObjectType({
 	name  : 'CfgComplexInput',
 	fields: {
-		id    : {
+		id      : {
 			type       : GraphQLString,
 			description: 'Id. If there is such complex value, itl be update if not, new value with this id will be created'
 		},
-		type  : {
+		type    : {
 			type       : CfgEnumComplexType.$grqphQlType,
 			description: 'Type. If updating existing value, it is not required'
 		},
-		name  : {
+		name    : {
 			type       : GraphQLString,
 			description: 'Name. If updating existing value, it is not required'
 		},
-		values: {
+		values  : {
 			type       : new GraphQLList(CfgScalarInput),
 			description: 'An array of scalar values. If the value exists, than it will be added directy or it will be created automaticly',
+		},
+		sourceId: {
+			type       : GraphQLString,
+			description: 'What this complex value is attached to'
 		}
 	}
 });
 
 const CfgComplexQuery = new CfgBaseQuery();
-CfgComplexQuery.addQuerie({
+CfgComplexQuery.addQuery({
 	name : 'cfgComplex',
 	value: {
 		type       : CfgComplex,
@@ -90,13 +87,13 @@ CfgComplexQuery.addQuerie({
 });
 
 const CfgComplexMutation = new CfgBaseQuery();
-CfgComplexMutation.addQuerie({
+CfgComplexMutation.addQuery({
 	name : 'cfgComplex',
 	value: {
 		type       : CfgComplex,
 		args       : {
 			value: {
-				type: CfgComplexInput
+				type: new GraphQLNonNull(CfgComplexInput),
 			}
 		},
 		description: 'Create or update complex value',
@@ -105,27 +102,8 @@ CfgComplexMutation.addQuerie({
 		}
 	}
 });
-CfgComplexMutation.addQuerie({
-	name : 'removeScalarFromComplex',
-	value: {
-		type   : CfgComplex,
-		args   : {
-			id      : {
-				type       : new GraphQLNonNull(GraphQLString),
-				description: 'Id of complex to remove from'
-			},
-			scalarId: {
-				type       : new GraphQLNonNull(GraphQLString),
-				description: 'Id of scalar to be removed'
-			}
-		},
-		resolve: async (_, {id, scalarId}) => {
-			return CfgComplexResolver.removeScalar(id, scalarId);
-		}
-	}
-});
 
-CfgComplexMutation.addQuerie({
+CfgComplexMutation.addQuery({
 	name : 'destroyCfgComplex',
 	value: {
 		type       : GraphQLBoolean,
@@ -137,7 +115,7 @@ CfgComplexMutation.addQuerie({
 		},
 		description: 'Destroy a complex by id',
 		resolve    : async (_, {id}) => {
-			return CfgComplexResolver.destroyById(id);
+			return CfgComplexResolver.destroy(id);
 		}
 	}
 });

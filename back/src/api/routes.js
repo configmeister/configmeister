@@ -6,6 +6,7 @@ const appRoutes = [{
 	path: '/login'
 }];
 
+
 export default async (app) => {
 	appRoutes.forEach(route => {
 
@@ -14,4 +15,10 @@ export default async (app) => {
 		});
 
 	});
+
+	if (process.env !== 'production') {
+		app.get('/test/*', (req, res) => {
+			res.sendFile(path.join(__dirname, '../../../front/dist/index.html'));
+		});
+	}
 }

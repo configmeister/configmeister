@@ -1,68 +1,36 @@
-import {v1 as uuid} from 'uuid';
 import ScalarValue from '../../models/scalar-value';
-
-async function CreateNewScalar({id, type, name, value}) {
-	if (!id) {
-		id = uuid();
-	}
-	return ScalarValue.create({
-		id,
-		type,
-		name,
-		value
-	});
-}
 
 class CfgScalarResolver {
 	static async createFromQuery(id) {
-		if (!id) throw new Error('Can`t get a scalar value without id');
-		const dbValue = await ScalarValue.findOne({
-			where: {id}
-		});
-		return new CfgScalarResolver(dbValue);
-	}
-
-	static async createFromMutation(value) {
-		if (!value.id) {
-			const res = await CreateNewScalar(value);
-			return new CfgScalarResolver(res);
-		}
-		const res = await ScalarValue.findOne({
-			where: {
-				id: value.id
-			}
-		});
-		if (!res) {
-			const res = await CreateNewScalar(value);
-			return new CfgScalarResolver(res);
-		}
-		Object.entries(value).forEach(entry => {
-			res.set(entry[0], entry[1]);
-		});
-		await res.save();
-		return new CfgScalarResolver(res);
-	}
-
-	static async destroyById(id) {
-		const res = await ScalarValue.destroy({
+		return ScalarValue.findOne({
 			where: {
 				id
 			}
 		});
-		return true;
 	}
 
-	constructor(props) {
-		this.id = props.id;
-		this.type = props.type;
-		this.name = props.name;
-		this.value = props.value;
-		this.createdAt = props.createdAt;
-		this.updatedAt = props.updatedAt;
+	static async createFromMutation(obj) {
+		if (!obj.id) {
+			return ScalarValue.createNew(obj);
+		}
+		const dbVal = await ScalarValue.findOne({
+			where: {
+				id: obj.id
+			}
+		});
+
+		if (!dbVal) { return ScalarValue.createNew(obj); }
+
+		Object.entries(obj).filter(entry => entry[0] !== 'id').forEach(entry => {
+			dbVal.set(entry[0], entry[1]);
+		});
+		await dbVal.save();
+		return dbVal;
+	}
+
+	static async destroy(id) {
+		return ScalarValue.$destroy(id);
 	}
 }
 
 export default CfgScalarResolver;
-export {
-	CreateNewScalar
-};

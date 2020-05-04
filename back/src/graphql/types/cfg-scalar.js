@@ -8,27 +8,31 @@ const CfgScalar = new GraphQLObjectType({
 	name  : 'CfgScalar',
 	fields: {
 		id       : {
-			type       : GraphQLString,
+			type       : new GraphQLNonNull(GraphQLString),
 			description: 'Id of scalar value entry'
 		},
 		type     : {
-			type       : CfgEnumScalarType.$grqphQlType,
+			type       : new GraphQLNonNull(CfgEnumScalarType.$grqphQlType),
 			description: 'Type of value'
 		},
 		name     : {
-			type       : GraphQLString,
+			type       : new GraphQLNonNull(GraphQLString),
 			description: 'Name of scalar value entry'
 		},
 		value    : {
-			type       : GraphQLString,
+			type       : new GraphQLNonNull(GraphQLString),
 			description: 'JSON value of scalar value'
 		},
+		sourceId : {
+			type       : new GraphQLNonNull(GraphQLString),
+			description: 'Source id (complex, branch, etc) of this scalar'
+		},
 		createdAt: {
-			type       : CfgTimestamp,
+			type       : new GraphQLNonNull(CfgTimestamp),
 			description: 'Created at timestamp'
 		},
 		updatedAt: {
-			type       : CfgTimestamp,
+			type       : new GraphQLNonNull(CfgTimestamp),
 			description: 'Updated at timestamp'
 		}
 	}
@@ -37,27 +41,31 @@ const CfgScalar = new GraphQLObjectType({
 const CfgScalarInput = new GraphQLInputObjectType({
 	name  : 'CfgScalarInput',
 	fields: {
-		id   : {
+		id      : {
 			type       : GraphQLString,
 			description: 'Id. If there is such scalar value, itl be update if not, new value with this id will be created'
 		},
-		type : {
+		type    : {
 			type       : CfgEnumScalarType.$grqphQlType,
 			description: 'Type. If updating existing value, it is not required'
 		},
-		name : {
+		name    : {
 			type       : GraphQLString,
 			description: 'Name. If updating existing value, it is not required'
 		},
-		value: {
+		value   : {
 			type       : GraphQLString,
 			description: 'JSON stringyfied real value. If updating existing value, it is not required'
+		},
+		sourceId: {
+			type       : GraphQLString,
+			description: 'What this scalar is attached to'
 		}
 	}
 });
 
 const CfgScalarQuery = new CfgBaseQuery();
-CfgScalarQuery.addQuerie({
+CfgScalarQuery.addQuery({
 	name : 'cfgScalar',
 	value: {
 		type       : CfgScalar,
@@ -74,7 +82,7 @@ CfgScalarQuery.addQuerie({
 });
 
 const CfgScalarMutation = new CfgBaseQuery();
-CfgScalarMutation.addQuerie({
+CfgScalarMutation.addQuery({
 	name : 'cfgScalar',
 	value: {
 		type       : CfgScalar,
@@ -89,7 +97,7 @@ CfgScalarMutation.addQuerie({
 		}
 	}
 });
-CfgScalarMutation.addQuerie({
+CfgScalarMutation.addQuery({
 	name : 'destroyCfgScalar',
 	value: {
 		type       : GraphQLBoolean,
@@ -101,7 +109,7 @@ CfgScalarMutation.addQuerie({
 		},
 		description: 'Delete a scalar value',
 		resolve    : async (_, {id}) => {
-			return CfgScalarResolver.destroyById(id);
+			return CfgScalarResolver.destroy(id);
 		}
 	}
 });
