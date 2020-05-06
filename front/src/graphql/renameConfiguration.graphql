@@ -1,0 +1,12 @@
+mutation($id: String, $name: String) {
+    cfgConfiguration(value: {id: $id, name: $name}) {
+        id,
+        name,
+        updatedAt,
+        versions {
+            id
+            name
+            updatedAt
+        }
+    }
+}

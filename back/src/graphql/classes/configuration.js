@@ -1,7 +1,19 @@
 import Configuration from '../../models/configuration';
 import CfgVersionResolver from './version';
+import {Op} from 'sequelize';
 
 class CfgConfigurationResolver {
+	static async getAll({name}) {
+		if (!name) name = '';
+		return Configuration.findAll({
+			where: {
+				name: {
+					[Op.iLike]: `%${name}%`
+				}
+			}
+		});
+	}
+
 	static async createFromQuery(id) {
 		return Configuration.findOne({
 			where: {

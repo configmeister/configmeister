@@ -7,56 +7,100 @@ schema {
 
 type CfgBranch {
     "Complex values of the branch"
-    complexValues: [CfgComplex]
+    complexValues: [CfgComplex]!
     "Created at timestamp"
-    createdAt: Timestamp
+    createdAt: Timestamp!
     "Id of the branch"
-    id: String
+    id: String!
     "Name of the branch"
-    name: String
+    name: String!
     "Scalar values of the branch"
-    scalarValues: [CfgScalar]
+    scalarValues: [CfgScalar]!
+    "What this branch is attached to"
+    sourceId: String!
     "Updated at timestamp"
-    updatedAt: Timestamp
+    updatedAt: Timestamp!
 }
 
 type CfgComplex {
     "Created at timestamp"
     createdAt: Timestamp
     "Id of the complex value entry"
-    id: String
+    id: String!
     "Name of the complex value entry"
-    name: String
+    name: String!
+    "What this complex value is attached to"
+    sourceId: String!
     "Type of the complex value entry"
-    type: CfgEnumComplexType
+    type: CfgEnumComplexType!
     "Updated at timestamp"
     updatedAt: Timestamp
     "Array of values of this complex value"
-    values: [CfgScalar]
+    values: [CfgScalar]!
+}
+
+type CfgConfiguration {
+    "Created at timestamp"
+    createdAt: Timestamp!
+    "Id of the configuration"
+    id: String!
+    "Name of the configuration"
+    name: String!
+    "Updated at timestamp"
+    updatedAt: Timestamp!
+    "Versions of the configuration"
+    versions: [CfgVersion!]
 }
 
 type CfgScalar {
     "Created at timestamp"
-    createdAt: Timestamp
+    createdAt: Timestamp!
     "Id of scalar value entry"
-    id: String
+    id: String!
     "Name of scalar value entry"
-    name: String
+    name: String!
+    "Source id (complex, branch, etc) of this scalar"
+    sourceId: String!
     "Type of value"
-    type: CfgEnumScalarType
+    type: CfgEnumScalarType!
     "Updated at timestamp"
-    updatedAt: Timestamp
+    updatedAt: Timestamp!
     "JSON value of scalar value"
-    value: String
+    value: String!
+}
+
+type CfgVersion {
+    "Branches of this version"
+    branches: [CfgBranch]
+    "Created at timestamp"
+    createdAt: Timestamp!
+    "Id of the version"
+    id: String!
+    "Name of the version"
+    name: String!
+    "What is this version attached to"
+    sourceId: String!
+    "Updated at timestamp"
+    updatedAt: Timestamp!
 }
 
 type mutations {
     "Create new or update existing branch"
-    cfgBranch(branch: CfgBranchInput): CfgBranch
+    cfgBranch(value: CfgBranchInput!): CfgBranch
     "Create or update complex value"
-    cfgComplex(value: CfgComplexInput): CfgComplex
+    cfgComplex(value: CfgComplexInput!): CfgComplex
+    "Create or update configuration"
+    cfgConfiguration(
+        "Configuration template"
+        value: CfgConfigurationInput!
+    ): CfgConfiguration
     "Create or update a scalar value"
     cfgScalar(value: CfgScalarInput!): CfgScalar
+    "Creat or update version"
+    cfgVersion(
+        "Version"
+        value: CfgVersionInput!
+    ): CfgVersion
     destroyBranch(
         "Branch id"
         id: String
@@ -66,40 +110,45 @@ type mutations {
         "Id of complex to be destroyed"
         id: String!
     ): Boolean
+    "Destroy configuration"
+    destroyCfgConfiguration(
+        "Id of the configuration to be deleted"
+        id: String!
+    ): Boolean
     "Delete a scalar value"
     destroyCfgScalar(
         "Id of scalar to be deleted"
         id: String!
     ): Boolean
-    "Remove complex value from branch (also deletes complex)"
-    removeComplexFromBranch(
-        "Branch id to remove from"
-        branchId: String,
-        "Complex id to remove"
-        id: String
+    "Remove version"
+    destroyCfgVersion(
+        "ID of the version tto be removed"
+        id: String!
     ): Boolean
-    "Remove scalar from branch (also deletes scalar)"
-    removeScalarFromBranch(
-        "Branch id to remove from"
-        branchId: String,
-        "Scalar id to remove"
-        id: String
-    ): Boolean
-    removeScalarFromComplex(
-        "Id of complex to remove from"
-        id: String!,
-        "Id of scalar to be removed"
-        scalarId: String!
-    ): CfgComplex
 }
 
 type queries {
+    "Get configurations"
+    cfgAllConfigurations(
+        "Options to filter through"
+        filter: CfgConfigurationInputFilter
+    ): [CfgConfiguration]
     "Get branch by id"
     cfgBranch(id: String!): CfgBranch
     "Get complex value by its id"
     cfgComplex(id: String!): CfgComplex
+    "Get configuration by id"
+    cfgConfiguration(
+        "Id of the configuration"
+        id: String!
+    ): CfgConfiguration
     "Get scalar value by its id"
     cfgScalar(id: String!): CfgScalar
+    "Get version by id"
+    cfgVersion(
+        "Id of the version"
+        id: String!
+    ): CfgVersion
 }
 
 enum CfgEnumComplexType {
@@ -112,10 +161,8 @@ enum CfgEnumComplexType {
 enum CfgEnumScalarType {
     "Boolean value"
     boolean
-    "Float value"
-    float
-    "Integer value"
-    integer
+    "Number value"
+    number
     "String value"
     string
 }
@@ -129,6 +176,8 @@ input CfgBranchInput {
     name: String
     "An array of scalar values. They will be created automaticly if not exist"
     scalarValues: [CfgScalarInput]
+    "What to attach to"
+    sourceId: String
 }
 
 input CfgComplexInput {
@@ -136,10 +185,26 @@ input CfgComplexInput {
     id: String
     "Name. If updating existing value, it is not required"
     name: String
+    "What this complex value is attached to"
+    sourceId: String
     "Type. If updating existing value, it is not required"
     type: CfgEnumComplexType
     "An array of scalar values. If the value exists, than it will be added directy or it will be created automaticly"
     values: [CfgScalarInput]
+}
+
+input CfgConfigurationInput {
+    "Id of the configuration"
+    id: String
+    "Name  of the configuration"
+    name: String
+    "Versions attached to the configuration"
+    versions: [CfgVersionInput]
+}
+
+input CfgConfigurationInputFilter {
+    "Name of the configuration"
+    name: String
 }
 
 input CfgScalarInput {
@@ -147,10 +212,23 @@ input CfgScalarInput {
     id: String
     "Name. If updating existing value, it is not required"
     name: String
+    "What this scalar is attached to"
+    sourceId: String
     "Type. If updating existing value, it is not required"
     type: CfgEnumScalarType
     "JSON stringyfied real value. If updating existing value, it is not required"
     value: String
+}
+
+input CfgVersionInput {
+    "Branches to attach"
+    branches: [CfgBranchInput]
+    "Id. If there is such version, itl be update if not, new value with this id will be created"
+    id: String
+    "Name. If updating existing value, it is not required"
+    name: String
+    "What this version is attached to"
+    sourceId: String
 }
 
 

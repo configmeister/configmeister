@@ -8,6 +8,10 @@ import 'jsoneditor/dist/jsoneditor.min.css';
 
 Vue.config.productionTip = false;
 
+import {plugin} from '@/plugins/loader';
+
+Vue.use(plugin);
+
 new Vue({
 	router,
 	store,

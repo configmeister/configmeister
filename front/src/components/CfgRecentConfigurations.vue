@@ -1,11 +1,10 @@
 <template>
-	<div class="test-scalar">
-	</div>
+	<div></div>
 </template>
 
 <script>
 	export default {
-		name: 'TestScalar'
+		name: 'CfgRecentConfigurations'
 	};
 </script>
 

@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Main from '../views/Main.vue';
-import TestScalar from '../views/test/TestScalar';
 
 Vue.use(VueRouter);
 
@@ -10,9 +9,13 @@ const routes = [{
 	name     : 'main',
 	component: Main
 }, {
-	path: '/test/scalar',
-	name: 'test-scalar',
-	component: TestScalar
+	path     : '/configuration/new',
+	name     : 'configuration-new',
+	component: () => import(/* webpackChunkName: "configurationNew" */ '../views/configuration/ConfigurationNew.vue')
+}, {
+	path: '/configuration/:id',
+	name: 'configuration',
+	component: () => import(/* webpackChunkName: "configuration" */ '../views/configuration/Configuration.vue')
 }];
 
 const router = new VueRouter({

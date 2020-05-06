@@ -52,6 +52,16 @@ const CfgConfigurationInput = new GraphQLInputObjectType({
 	}
 });
 
+const CfgConfigurationInputFilter = new GraphQLInputObjectType({
+	name  : 'CfgConfigurationInputFilter',
+	fields: {
+		name: {
+			type       : GraphQLString,
+			description: 'Name of the configuration'
+		}
+	}
+});
+
 const CfgConfigurationQuery = new CfgBaseQuery();
 CfgConfigurationQuery.addQuery({
 	name : 'cfgConfiguration',
@@ -66,6 +76,25 @@ CfgConfigurationQuery.addQuery({
 		},
 		resolve    : async (_, {id}) => {
 			return CfgConfigurationResolver.createFromQuery(id);
+		}
+	}
+});
+
+CfgConfigurationQuery.addQuery({
+	name : 'cfgAllConfigurations',
+	value: {
+		type       : new GraphQLList(CfgConfiguration),
+		description: 'Get configurations',
+		args       : {
+			filter: {
+				type       : CfgConfigurationInputFilter,
+				description: 'Options to filter through'
+			}
+		},
+		resolve    : async (_, {filter}) => {
+			console.log('Filter', filter);
+			if (!filter) filter = {};
+			return CfgConfigurationResolver.getAll(filter);
 		}
 	}
 });
@@ -109,6 +138,7 @@ CfgConfigurationMutation.addQuery({
 export {
 	CfgConfiguration,
 	CfgConfigurationInput,
+	CfgConfigurationInputFilter,
 	CfgConfigurationQuery,
 	CfgConfigurationMutation
 };

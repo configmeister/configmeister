@@ -1,0 +1,12 @@
+query($filter: CfgConfigurationInputFilter) {
+    cfgAllConfigurations(filter: $filter) {
+        id
+        name
+        updatedAt
+        versions {
+            id
+            name
+            updatedAt
+        }
+    }
+}
