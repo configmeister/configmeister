@@ -12,7 +12,6 @@
 					</v-list-item-content>
 				</v-list-item>
 			</v-list>
-			<v-divider></v-divider>
 			<v-layout class="mt-3" column>
 				<template v-if="controlType === control_type.add_scalar">
 					<v-text-field
@@ -39,9 +38,9 @@
 						></v-text-field>
 					</v-layout>
 					<v-layout class="pl-4 pr-4" row>
-						<v-btn depressed color="primary" @click="controllSubmit">Submit</v-btn>
+						<v-btn depressed min-width="200" color="primary" @click="controllSubmit">Submit</v-btn>
 						<v-spacer></v-spacer>
-						<v-btn depressed color="error" @click="resetControls">Cancel</v-btn>
+						<v-btn depressed min-width="200" color="error" @click="resetControls">Cancel</v-btn>
 					</v-layout>
 				</template>
 			</v-layout>
@@ -147,7 +146,6 @@
 							value = JSON.stringify(this.controlValues[control_type.add_scalar].value === 'true');
 					}
 
-					console.log(withId);
 					const res = await graphRequest(createNewScalar, {
 						...(withId === true ? {id: this.currentSelection.id} : {}),
 						name: this.controlValues[control_type.add_scalar].name,
@@ -156,7 +154,6 @@
 						...(withId !== true ? {sourceId: this.currentSelection.id} : {})
 					});
 					this.$emit('change', res.cfgScalar);
-					this.resetControls();
 				};
 			},
 			addComplex() {

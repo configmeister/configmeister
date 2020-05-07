@@ -11,15 +11,15 @@
 			color="secondary"
 	>
 		<template v-slot:prepend="{item}">
-			<v-icon small color="primary">{{itemTypeIcon(item)}}</v-icon>
+			<v-icon small color="primary cfg-pointer">{{itemTypeIcon(item)}}</v-icon>
 		</template>
 		<template v-slot:label="{item}">
-			<span class="body-2 mr-1">{{item.name}}</span>
-			<span class="body-2" v-if="item.type">
-				(<span class="body-2 overline">{{item.type}}</span>)
+			<span class="body-2 mr-1 cfg-pointer">{{item.name}}</span>
+			<span class="body-2 cfg-pointer" v-if="item.type">
+				(<span class="body-2 overline cfg-pointer">{{item.type}}</span>)
 			</span>
-			<span class="body-2 mr-3" v-if="item.value">:</span>
-			<span class="body-2" :class="itemClass(item.type)" v-if="item.value">{{itemParseValue(item)}}</span>
+			<span class="body-2 mr-3 cfg-pointer" v-if="item.value">:</span>
+			<span class="body-2 cfg-pointer" :class="itemClass(item.type)" v-if="item.value">{{itemParseValue(item)}}</span>
 		</template>
 	</v-treeview>
 </template>
