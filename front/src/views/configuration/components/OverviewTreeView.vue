@@ -28,24 +28,18 @@
 	import {graphRequest} from '@/utils/graph';
 	import getBranch from '@/graphql/getBranch.graphql';
 
-	const scalar_type = {
-		number : 'number',
-		string : 'string',
-		boolean: 'boolean',
-	};
-
 	export default {
 		name    : 'OverviewTreeView',
 		props   : {
-			currentBranch: {},
-			value        : {},
-			updater      : {},
+			currentBranch           : {},
+			value                   : {},
+			updater                 : {},
+			excludedKeysForSelection: {},
 		},
 		data() {
 			return {
-				selected: [],
-				model   : {},
-				inited  : false,
+				model : {},
+				inited: false,
 			};
 		},
 		computed: {
@@ -117,8 +111,8 @@
 		async mounted() {
 			await this.updateValue();
 			this.inited = true;
-			this.updater.on('change-value', value => {
-				this.updateValue();
+			this.updater.on('change-value', async () => {
+				await this.updateValue();
 			});
 		}
 	};

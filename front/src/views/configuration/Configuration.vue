@@ -28,7 +28,8 @@
 		</v-layout>
 		<v-layout row justify-space-between fill-height>
 			<v-card class="overview-body">
-				<overview-tree-view :currentBranch="currentBranch" v-model="currentSelection" :updater="updater"></overview-tree-view>
+				<overview-tree-view :currentBranch="currentBranch" v-model="currentSelection"
+				                    :updater="updater"></overview-tree-view>
 			</v-card>
 			<v-card width="540">
 				<v-tabs dense centered>
@@ -39,7 +40,8 @@
 
 					<v-tab-item>
 						<v-divider></v-divider>
-						<controls-values :current-branch="currentBranch" :current-selection="currentSelection" @change="onChangeValue"></controls-values>
+						<controls-values :current-branch="currentBranch" :current-selection="currentSelection"
+						                 @change="onChangeValue"></controls-values>
 					</v-tab-item>
 
 					<v-tab-item>
@@ -96,8 +98,8 @@
 			},
 		},
 		methods   : {
-			onChangeValue(val) {
-				this.updater.emit('change-value', val);
+			onChangeValue() {
+				this.updater.emit('change-value');
 			}
 		},
 		async mounted() {

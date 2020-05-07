@@ -3,6 +3,7 @@ fragment scalarValue on CfgScalar {
     name
     type
     value
+    sourceId
 }
 
 query($id: String!) {
@@ -19,6 +20,7 @@ query($id: String!) {
             values {
                 ...scalarValue
             }
+            sourceId
         }
     }
 }

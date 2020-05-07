@@ -13,154 +13,80 @@
 				</v-list-item>
 			</v-list>
 			<v-layout class="mt-3" column>
-				<template v-if="controlType === control_type.add_scalar">
-					<v-text-field
-							label="Key name"
-							outlined
-							dense
-							v-model="controlValues[control_type.add_scalar].name"
-					></v-text-field>
-					<v-layout>
-						<v-select
-								style="max-width: 150px"
-								class="mr-3"
-								outlined
-								dense
-								label="Value type"
-								v-model="controlValues[control_type.add_scalar].type"
-								:items="controlValues[control_type.add_scalar].typeOptions"
-						></v-select>
-						<v-text-field
-								outlined
-								dense
-								label="Value"
-								v-model="controlValues[control_type.add_scalar].value"
-						></v-text-field>
-					</v-layout>
-					<v-layout class="pl-4 pr-4" row>
-						<v-btn depressed min-width="200" color="primary" @click="controllSubmit">Submit</v-btn>
-						<v-spacer></v-spacer>
-						<v-btn depressed min-width="200" color="error" @click="resetControls">Cancel</v-btn>
-					</v-layout>
-				</template>
+				<component :is="controlsComponent" :data="controlsComponentData" @update="$emit('change')"></component>
 			</v-layout>
 		</template>
 	</v-layout>
 </template>
 
 <script>
+	import ControlScalar from '@/views/configuration/components/controls/ControlScalar';
 	import {graphRequest} from '@/utils/graph';
-	import createNewScalar from '@/graphql/createNewScalar.graphql';
+	import removeScalar from '@/graphql/removeScalar.graphql';
 
 	const control_type = {
-		add_scalar : 'add-scalar',
-		add_complex: 'add-complex'
+		scalar: 'scalar',
 	};
-	const scalar_types = {
-		number : 'number',
-		string : 'string',
-		boolean: 'boolean',
+
+	const control_components = {
+		[control_type.scalar]: ControlScalar
 	};
 
 	export default {
-		name    : 'ControlsValues',
-		props   : {
+		name   : 'ControlsValues',
+		props  : {
 			currentBranch   : {},
 			currentSelection: {},
 		},
 		data() {
 			return {
-				control_type,
-				controlType   : null,
-				controllSubmit: () => {},
-				controlValues : {
-					[control_type.add_scalar]: {
-						name       : '',
-						type       : scalar_types.string,
-						typeOptions: Object.values(scalar_types),
-						value      : ''
-					}
-				}
+				options              : [],
+				controlsComponentData: {},
+				controlsComponent    : null
 			};
 		},
-		watch   : {
+		watch  : {
 			currentSelection: {
-				deep: true,
-				handler() {
-					if (this.currentSelection && this.currentSelection.itemType === 'scalar') {
-						this.controlValues = {
-							[control_type.add_scalar]: {
-								name       : this.currentSelection.name,
-								type       : this.currentSelection.type,
-								value      : JSON.parse(this.currentSelection.value),
-								typeOptions: Object.values(scalar_types),
-							}
-						};
-						this.addScalar(true);
+				deep     : true,
+				immediate: true,
+				handler(value) {
+					if (!value) return;
+					switch (value.itemType) {
+						case 'root':
+							this.controlsComponent = null;
+							this.options = [{
+								click: () => {
+									this.controlsComponentData = {
+										sourceId: this.currentBranch,
+									};
+									this.controlsComponent = control_components[control_type.scalar];
+								},
+								text : '+ Add Scalar value',
+							}, {
+								click: () => {},
+								text : '+ Add Complex value',
+							}];
+							break;
+						case 'scalar':
+							this.options = [{
+								click      : () => {
+									this.removeScalarValue();
+								},
+								text       : 'Delete this value',
+								customClass: 'error--text'
+							}];
+							this.controlsComponentData = value;
+							this.controlsComponent = control_components[control_type.scalar];
 					}
 				}
 			}
 		},
-		computed: {
-			options() {
-				switch (this.currentSelection.itemType) {
-					case 'root':
-						return [{
-							click  : this.addScalar,
-							text   : '+ Add Scalar value',
-							subText: `Path: ${this.itemPath}`
-						}, {
-							click  : this.addComplex,
-							text   : '+ Add Complex value',
-							subText: `Path: ${this.itemPath}`
-						}];
-					case 'scalar':
-						return [{
-							click      : this.destroyScalar,
-							text       : 'Remove this value',
-							customClass: 'error--text'
-						}];
-				}
-			},
-			itemPath() {
-				return 'backend';
-			}
-		},
-		methods : {
-			resetControls() {
-				this.controlType = null;
-				this.controllSubmit = () => {};
-			},
-			addScalar(withId = false) {
-				this.controlType = control_type.add_scalar;
-				this.controllSubmit = async () => {
-					let value = '';
-					switch (this.controlValues[control_type.add_scalar].type) {
-						case scalar_types.number:
-							value = JSON.stringify(parseFloat(this.controlValues[control_type.add_scalar].value));
-							break;
-						case scalar_types.string:
-							value = JSON.stringify(this.controlValues[control_type.add_scalar].value);
-							break;
-						case scalar_types.boolean:
-							value = JSON.stringify(this.controlValues[control_type.add_scalar].value === 'true');
-					}
-
-					const res = await graphRequest(createNewScalar, {
-						...(withId === true ? {id: this.currentSelection.id} : {}),
-						name: this.controlValues[control_type.add_scalar].name,
-						type: this.controlValues[control_type.add_scalar].type,
-						value,
-						...(withId !== true ? {sourceId: this.currentSelection.id} : {})
-					});
-					this.$emit('change', res.cfgScalar);
-				};
-			},
-			addComplex() {
-
-			},
-			destroyScalar() {
-
+		methods: {
+			async removeScalarValue() {
+				await graphRequest(removeScalar, {
+					id: this.currentSelection.id,
+				});
+				this.$emit('change');
 			}
 		}
 	};
