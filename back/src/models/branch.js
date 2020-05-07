@@ -17,7 +17,8 @@ class Branch extends Model {
 		return ScalarValue.findAll({
 			where: {
 				sourceId: id,
-			}
+			},
+			order: ['name']
 		});
 	}
 

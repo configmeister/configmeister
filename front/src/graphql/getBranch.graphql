@@ -1,0 +1,24 @@
+fragment scalarValue on CfgScalar {
+    id
+    name
+    type
+    value
+}
+
+query($id: String!) {
+    cfgBranch(id: $id) {
+        id
+        name
+        scalarValues {
+            ...scalarValue
+        }
+        complexValues {
+            id
+            type
+            name
+            values {
+                ...scalarValue
+            }
+        }
+    }
+}

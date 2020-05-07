@@ -84,7 +84,6 @@
 						id  : this.data.id,
 						name: this.newConfigurationName
 					});
-					console.log(result);
 					await this.$store.commit(mutations.set_configuration_from_all, result.cfgConfiguration);
 					this.newConfigurationName = '';
 					this.renameDialog = false;
