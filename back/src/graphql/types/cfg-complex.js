@@ -9,34 +9,46 @@ import ComplexValue from '../../models/complex-value';
 const CfgComplex = new GraphQLObjectType({
 	name  : 'CfgComplex',
 	fields: {
-		id       : {
+		id           : {
 			type       : new GraphQLNonNull(GraphQLString),
 			description: 'Id of the complex value entry'
 		},
-		type     : {
+		complex      : {
+			type       : new GraphQLNonNull(GraphQLBoolean),
+			description: 'Complex flag',
+			resolve    : () => true,
+		},
+		type         : {
 			type       : new GraphQLNonNull(CfgEnumComplexType.$grqphQlType),
 			description: 'Type of the complex value entry'
 		},
-		name     : {
+		name         : {
 			type       : new GraphQLNonNull(GraphQLString),
 			description: 'Name of the complex value entry'
 		},
-		values   : {
+		scalarValues : {
 			type       : new GraphQLNonNull(new GraphQLList(CfgScalar)),
 			description: 'Array of values of this complex value',
 			resolve    : async (obj) => {
 				return ComplexValue.getScalars(obj.id);
 			}
 		},
-		sourceId : {
+		complexValues: {
+			type       : new GraphQLNonNull(new GraphQLList(CfgComplex)),
+			description: 'Array of complex values of this complex value',
+			resolve    : async (obj) => {
+				return ComplexValue.getComplex(obj.id);
+			}
+		},
+		sourceId     : {
 			type       : new GraphQLNonNull(GraphQLString),
 			description: 'What this complex value is attached to'
 		},
-		createdAt: {
+		createdAt    : {
 			type       : CfgTimestamp,
 			description: 'Created at timestamp'
 		},
-		updatedAt: {
+		updatedAt    : {
 			type       : CfgTimestamp,
 			description: 'Updated at timestamp'
 		}
@@ -46,23 +58,27 @@ const CfgComplex = new GraphQLObjectType({
 const CfgComplexInput = new GraphQLInputObjectType({
 	name  : 'CfgComplexInput',
 	fields: {
-		id      : {
+		id           : {
 			type       : GraphQLString,
 			description: 'Id. If there is such complex value, itl be update if not, new value with this id will be created'
 		},
-		type    : {
+		type         : {
 			type       : CfgEnumComplexType.$grqphQlType,
 			description: 'Type. If updating existing value, it is not required'
 		},
-		name    : {
+		name         : {
 			type       : GraphQLString,
 			description: 'Name. If updating existing value, it is not required'
 		},
-		values  : {
+		scalarValues : {
 			type       : new GraphQLList(CfgScalarInput),
 			description: 'An array of scalar values. If the value exists, than it will be added directy or it will be created automaticly',
 		},
-		sourceId: {
+		complexValues: {
+			type       : new GraphQLList(CfgComplexInput),
+			description: 'An array of complex values. If the value exists than it will be added directly ot ot will be crated automatically'
+		},
+		sourceId     : {
 			type       : GraphQLString,
 			description: 'What this complex value is attached to'
 		}

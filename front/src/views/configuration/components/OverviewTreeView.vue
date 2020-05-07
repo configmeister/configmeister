@@ -65,12 +65,37 @@
 						value   : scalar.value,
 						sourceId: scalar.sourceId,
 						itemType: 'scalar',
-						path    : [],
 					};
 				});
 			},
+			parseValues(values) {
+				return values.map(value => {
+					// this is scalar
+					if (value.value) {
+						return {
+							id      : value.id,
+							name    : value.name,
+							type    : value.type,
+							value   : value.value,
+							sourceId: value.sourceId,
+							itemType: 'scalar',
+						};
+					} else if (value.values) {
+						return this.parseComplex(value);
+					}
+				});
+			},
 			parseComplex() {
-				return [];
+				return this.model.complexValues.map(complex => {
+					return {
+						id      : complex.id,
+						name    : complex.name,
+						type    : complex.type,
+						sourceId: complex.sourceId,
+						itemType: 'complex',
+						children: this.parseValues(complex.values)
+					};
+				});
 			},
 			onActiveUpdate(e) {
 				this.$emit('input', e[0]);

@@ -11,6 +11,11 @@ const CfgScalar = new GraphQLObjectType({
 			type       : new GraphQLNonNull(GraphQLString),
 			description: 'Id of scalar value entry'
 		},
+		scalar   : {
+			type       : new GraphQLNonNull(GraphQLBoolean),
+			description: 'Scalar flag',
+			resolve    : () => true
+		},
 		type     : {
 			type       : new GraphQLNonNull(CfgEnumScalarType.$grqphQlType),
 			description: 'Type of value'

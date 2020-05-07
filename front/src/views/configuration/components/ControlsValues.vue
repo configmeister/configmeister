@@ -23,13 +23,16 @@
 	import ControlScalar from '@/views/configuration/components/controls/ControlScalar';
 	import {graphRequest} from '@/utils/graph';
 	import removeScalar from '@/graphql/removeScalar.graphql';
+	import ControlsComplex from '@/views/configuration/components/controls/ControlsComplex';
 
 	const control_type = {
-		scalar: 'scalar',
+		scalar : 'scalar',
+		complex: 'complex'
 	};
 
 	const control_components = {
-		[control_type.scalar]: ControlScalar
+		[control_type.scalar] : ControlScalar,
+		[control_type.complex]: ControlsComplex
 	};
 
 	export default {
@@ -53,17 +56,23 @@
 					if (!value) return;
 					switch (value.itemType) {
 						case 'root':
+						case 'complex':
 							this.controlsComponent = null;
 							this.options = [{
 								click: () => {
 									this.controlsComponentData = {
-										sourceId: this.currentBranch,
+										sourceId: this.currentSelection.id,
 									};
 									this.controlsComponent = control_components[control_type.scalar];
 								},
 								text : '+ Add Scalar value',
 							}, {
-								click: () => {},
+								click: () => {
+									this.controlsComponentData = {
+										sourceId: this.currentSelection.id
+									};
+									this.controlsComponent = control_components[control_type.complex];
+								},
 								text : '+ Add Complex value',
 							}];
 							break;

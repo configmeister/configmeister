@@ -21,6 +21,14 @@ class ComplexValue extends Model {
 		});
 	}
 
+	static async getComplex(id) {
+		return ComplexValue.findAll({
+			where: {
+				sourceId: id
+			}
+		});
+	}
+
 	static async $destroy(id) {
 		return ComplexValue.destroy({
 			where: {

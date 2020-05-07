@@ -1,0 +1,9 @@
+mutation($id: String, $type: CfgEnumComplexType, $name: String, $sourceId: String) {
+    cfgComplex(value: {id: $id, type: $type, name: $name, sourceId: $sourceId}) {
+        id
+        name
+        type
+        sourceId
+        updatedAt
+    }
+}
