@@ -20,8 +20,7 @@
 
 <script>
 	import {COMPLEX_TYPE} from '@/../../back/src/datatypes';
-	import upsertComplex from '@/graphql/upsertComplex.graphql';
-	import {graphRequest} from '@/utils/graph';
+	import api from '@/utils/api';
 
 	export default {
 		name    : 'ControlComplex',
@@ -58,8 +57,7 @@
 					this.loading = false;
 					return;
 				}
-
-				const res = await graphRequest(upsertComplex, {
+				const res = await api.upsertComplex({
 					...(this.data.id ? {id: this.data.id} : {}),
 					name    : this.name,
 					type    : this.type,

@@ -21,9 +21,8 @@
 
 <script>
 	import ControlScalar from '@/views/configuration/components/controls/ControlScalar';
-	import {graphRequest} from '@/utils/graph';
-	import removeScalar from '@/graphql/removeScalar.graphql';
 	import ControlsComplex from '@/views/configuration/components/controls/ControlsComplex';
+	import api from '@/utils/api';
 
 	const control_type = {
 		scalar : 'scalar',
@@ -74,7 +73,13 @@
 									this.controlsComponent = control_components[control_type.complex];
 								},
 								text : '+ Add Complex value',
-							}];
+							}, value.itemType === 'complex' ? {
+								click      : () => {
+									this.destroyComplex();
+								},
+								text       : 'Delete this value',
+								customClass: 'error--text'
+							} : {}];
 							break;
 						case 'scalar':
 							this.options = [{
@@ -92,9 +97,11 @@
 		},
 		methods: {
 			async removeScalarValue() {
-				await graphRequest(removeScalar, {
-					id: this.currentSelection.id,
-				});
+				await api.destroyScalar(this.currentSelection.id);
+				this.$emit('change');
+			},
+			async destroyComplex() {
+				await api.destroyComplex(this.currentSelection.id);
 				this.$emit('change');
 			}
 		}

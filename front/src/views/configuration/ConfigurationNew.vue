@@ -19,8 +19,7 @@
 </template>
 
 <script>
-	import {graphRequest} from '@/utils/graph';
-	import createNewConfiguration from '@/graphql/createNewConfiguration.graphql';
+	import api from '@/utils/api';
 
 	export default {
 		name   : 'ConfigurationNew',
@@ -34,13 +33,9 @@
 		methods: {
 			async create() {
 				await this.loader.wrap(async () => {
-					const res = await graphRequest(createNewConfiguration, {
-						configurationName: this.configurationName,
-						versionName      : this.versionName,
-						branches         : this.branches.map(branchName => ({name: branchName}))
-					});
+					const res = await api.createNewConfiguration(this.configurationName, this.versionName, this.branches);
 					await this.$router.push({
-						path: `/configuration/${res.cfgConfiguration.id}`,
+						path: `/configuration/${res.id}`,
 					});
 				});
 			}

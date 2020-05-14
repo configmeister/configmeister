@@ -31,8 +31,7 @@
 
 <script>
 	import {SCALAR_TYPE} from '@/../../back/src/datatypes';
-	import upsertScalar from '@/graphql/upsertScalar.graphql';
-	import {graphRequest} from '@/utils/graph';
+	import api from '@/utils/api';
 
 	export default {
 		name    : 'ControlScalar',
@@ -98,13 +97,14 @@
 						value = JSON.stringify(this.value === 'true');
 				}
 
-				const res = await graphRequest(upsertScalar, {
+				const res = await api.upsertScalar({
 					...(this.data.id ? {id: this.data.id} : {}),
 					type    : this.type,
 					value,
 					name    : this.name,
 					sourceId: this.data.sourceId
 				});
+				if (!res) return;
 
 				this.$emit('update');
 
@@ -130,7 +130,7 @@
 				handler(val) {
 					if (val.name) this.name = val.name;
 					if (val.type) this.type = val.type;
-					if (val.value) this.value = val.value;
+					if (val.value) this.value = JSON.parse(val.value);
 				}
 			}
 		}

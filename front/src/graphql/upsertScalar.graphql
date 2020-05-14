@@ -1,9 +1,0 @@
-mutation($id: String, $sourceId: String, $name: String, $type: CfgEnumScalarType, $value: String) {
-    cfgScalar(value: {id: $id, sourceId: $sourceId, name: $name, type: $type, value: $value}) {
-        id
-        name
-        type
-        value
-        sourceId
-    }
-}

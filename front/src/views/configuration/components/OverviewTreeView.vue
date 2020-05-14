@@ -1,32 +1,46 @@
 <template>
-	<v-treeview
-			v-if="inited"
-			class="mt-4"
-			@update:active="onActiveUpdate"
-			return-object
-			dense
-			activatable
-			hoverable
-			:items="computedBranchValues"
-			color="secondary"
-	>
-		<template v-slot:prepend="{item}">
-			<v-icon small color="primary cfg-pointer">{{itemTypeIcon(item)}}</v-icon>
-		</template>
-		<template v-slot:label="{item}">
-			<span class="body-2 mr-1 cfg-pointer">{{item.name}}</span>
-			<span class="body-2 cfg-pointer" v-if="item.type">
+	<div>
+		<v-treeview
+				v-if="inited"
+				class="mt-4"
+				@update:active="onActiveUpdate"
+				return-object
+				dense
+				activatable
+				hoverable
+				:items="computedBranchValues"
+				color="secondary"
+		>
+			<template v-slot:prepend="{item}">
+				<v-icon small color="primary cfg-pointer">{{itemTypeIcon(item)}}</v-icon>
+			</template>
+			<template v-slot:label="{item}">
+				<span class="body-2 mr-1 cfg-pointer">{{item.name}}</span>
+				<span class="body-2 cfg-pointer" v-if="item.type">
 				(<span class="body-2 overline cfg-pointer">{{item.type}}</span>)
 			</span>
-			<span class="body-2 mr-3 cfg-pointer" v-if="item.value">:</span>
-			<span class="body-2 cfg-pointer" :class="itemClass(item.type)" v-if="item.value">{{itemParseValue(item)}}</span>
-		</template>
-	</v-treeview>
+				<span class="body-2 mr-3 cfg-pointer" v-if="item.value">:</span>
+				<span class="body-2 cfg-pointer" :class="itemClass(item.type)" v-if="item.value">{{itemParseValue(item)}}</span>
+				<v-btn small icon @click.native.prevent.stop="onMouseClick(item, $event)">
+					<v-icon small color="black">mdi-dots-vertical</v-icon>
+				</v-btn>
+			</template>
+		</v-treeview>
+
+		<v-menu v-model="sideMenuOpened" :position-x="menuX" :position-y="menuY" absolute>
+			<v-list dense>
+				<v-list-item @click="copyItem">
+					<v-list-item-content>
+						<v-list-item-title>Copy</v-list-item-title>
+					</v-list-item-content>
+				</v-list-item>
+			</v-list>
+		</v-menu>
+	</div>
 </template>
 
 <script>
-	import {graphRequest} from '@/utils/graph';
-	import getBranch from '@/graphql/getBranch.graphql';
+	import api from '@/utils/api';
 
 	export default {
 		name    : 'OverviewTreeView',
@@ -38,8 +52,12 @@
 		},
 		data() {
 			return {
-				model : {},
-				inited: false,
+				model         : {},
+				inited        : false,
+				sideMenuOpened: false,
+				menuX         : 0,
+				menuY         : 0,
+				menuData      : {},
 			};
 		},
 		computed: {
@@ -56,8 +74,18 @@
 			}
 		},
 		methods : {
-			parseScalars() {
-				return this.model.scalarValues.map(scalar => {
+			copyItem() {
+
+			},
+			onMouseClick(item, e) {
+				this.menuX = e.clientX;
+				this.menuY = e.clientY;
+				this.menuData = {};
+				this.sideMenuOpened = true;
+			},
+			parseScalars(vals) {
+				if (!vals) vals = this.model.scalarValues;
+				return vals.map(scalar => {
 					return {
 						id      : scalar.id,
 						name    : scalar.name,
@@ -68,32 +96,22 @@
 					};
 				});
 			},
-			parseValues(values) {
-				return values.map(value => {
-					// this is scalar
-					if (value.value) {
-						return {
-							id      : value.id,
-							name    : value.name,
-							type    : value.type,
-							value   : value.value,
-							sourceId: value.sourceId,
-							itemType: 'scalar',
-						};
-					} else if (value.values) {
-						return this.parseComplex(value);
-					}
-				});
+			parseValues(scalars, complex) {
+				return [
+					...(scalars && scalars.length ? this.parseScalars(scalars) : []),
+					...(complex && complex.length ? this.parseComplex(complex) : [])
+				];
 			},
-			parseComplex() {
-				return this.model.complexValues.map(complex => {
+			parseComplex(vals) {
+				if (!vals) vals = this.model.complexValues;
+				return vals.map(complex => {
 					return {
 						id      : complex.id,
 						name    : complex.name,
 						type    : complex.type,
 						sourceId: complex.sourceId,
 						itemType: 'complex',
-						children: this.parseValues(complex.values)
+						children: this.parseValues(complex.scalarValues, complex.complexValues)
 					};
 				});
 			},
@@ -129,8 +147,7 @@
 				}
 			},
 			async updateValue() {
-				const res = await graphRequest(getBranch, {id: this.currentBranch});
-				this.model = res.cfgBranch;
+				this.model = await api.getBranchById(this.currentBranch);
 			}
 		},
 		async mounted() {
@@ -143,6 +160,8 @@
 	};
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+	.side-menu {
+		background-color : #ffffff;
+	}
 </style>

@@ -26,7 +26,8 @@ class Branch extends Model {
 		return ComplexValue.findAll({
 			where: {
 				sourceId: id
-			}
+			},
+			order: ['name']
 		});
 	}
 

@@ -18,8 +18,13 @@ const config = {
 	}
 };
 
+const import_type = {
+	branch: 'branch'
+};
+
 export {
 	actions,
 	mutations,
-	config
+	config,
+	import_type
 };

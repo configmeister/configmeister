@@ -1,8 +1,0 @@
-mutation($configurationName: String, $versionName: String, $branches: [CfgBranchInput]) {
-    cfgConfiguration(value: {name: $configurationName, versions: [{
-        name: $versionName
-        branches: $branches
-    }]}) {
-        id
-    }
-}

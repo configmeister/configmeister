@@ -4,8 +4,6 @@ import router from './router';
 import store from './store';
 import vuetify from './plugins/vuetify';
 
-import 'jsoneditor/dist/jsoneditor.min.css';
-
 Vue.config.productionTip = false;
 
 import {plugin} from '@/plugins/loader';

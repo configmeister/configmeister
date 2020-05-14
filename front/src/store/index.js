@@ -1,9 +1,10 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import {actions, mutations} from '@/const';
-import {graphRequest} from '@/utils/graph';
-import getConfigurations from '@/graphql/getConfigurations.graphql';
-import getConfigurationFull from '@/graphql/getConfigurationFull.graphql';
+// import {graphRequest} from '@/utils/graph';
+// import getConfigurations from '@/graphql/getConfigurations.graphql';
+// import getConfigurationFull from '@/graphql/getConfigurationFull.graphql';
+import api from '@/utils/api';
 
 Vue.use(Vuex);
 
@@ -37,26 +38,18 @@ export default new Vuex.Store({
 	},
 	actions  : {
 		async [actions.init_configurations](context, filter) {
-			const configurations = await graphRequest(getConfigurations, {
-				filter: {
-					name: (filter && filter.name) ? filter.name : ''
-				}
-			});
-			context.commit(mutations.set_has_any_configurations, !!configurations.cfgAllConfigurations.length);
-			context.commit(mutations.set_main_configurations, configurations.cfgAllConfigurations);
+			const configurations = await api.getConfigurationsWithFilter(filter);
+			context.commit(mutations.set_has_any_configurations, !!configurations.length);
+			context.commit(mutations.set_main_configurations, configurations);
 		},
 		async [actions.get_configurations](context, filter) {
-			const configurations = await graphRequest(getConfigurations, {
-				filter: {
-					name: (filter && filter.name) ? filter.name : ''
-				}
-			});
-			context.commit(mutations.set_main_configurations, configurations.cfgAllConfigurations);
+			const configurations = await api.getConfigurationsWithFilter(filter);
+			context.commit(mutations.set_main_configurations, configurations);
 		},
 		async [actions.get_configuration](context, id) {
-			const configuration = await graphRequest(getConfigurationFull, {id});
-			context.commit(mutations.set_current_configuration, configuration.cfgConfiguration);
-			context.commit(mutations.set_current_version, configuration.cfgConfiguration.versions[0].id);
+			const configuration = await api.getConfigurationById(id);
+			context.commit(mutations.set_current_configuration, configuration);
+			context.commit(mutations.set_current_version, configuration.versions[0].id);
 		},
 	},
 	modules  : {}

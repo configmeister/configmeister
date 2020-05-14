@@ -31,8 +31,8 @@
 
 <script>
 	import moment from 'moment';
-	import {graphRequest} from '@/utils/graph';
-	import renameConfiguration from '@/graphql/renameConfiguration.graphql';
+	// import {graphRequest} from '@/utils/graph';
+	// import renameConfiguration from '@/graphql/renameConfiguration.graphql';
 	import {actions, mutations} from '@/const';
 
 	export default {
@@ -80,13 +80,13 @@
 					return;
 				}
 				await this.loader.wrap(async () => {
-					const result = await graphRequest(renameConfiguration, {
-						id  : this.data.id,
-						name: this.newConfigurationName
-					});
-					await this.$store.commit(mutations.set_configuration_from_all, result.cfgConfiguration);
-					this.newConfigurationName = '';
-					this.renameDialog = false;
+					// const result = await graphRequest(renameConfiguration, {
+					// 	id  : this.data.id,
+					// 	name: this.newConfigurationName
+					// });
+					// await this.$store.commit(mutations.set_configuration_from_all, result.cfgConfiguration);
+					// this.newConfigurationName = '';
+					// this.renameDialog = false;
 				});
 			}
 		}
