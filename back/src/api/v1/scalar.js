@@ -31,4 +31,5 @@ export default async (app, prefix) => {
 		await ScalarValue.$destroy(req.body.id);
 		res.json(true);
 	});
+
 }

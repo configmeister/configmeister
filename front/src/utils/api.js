@@ -4,7 +4,8 @@ const endpoint = {
 	api_configuration: '/api/v1/configuration',
 	api_branch       : '/api/v1/branch',
 	api_scalar       : '/api/v1/scalar',
-	api_complex      : '/api/v1/complex'
+	api_complex      : '/api/v1/complex',
+	api_util         : '/api/v1/util'
 };
 
 
@@ -95,7 +96,15 @@ const api = {
 		}
 	},
 	async importJSON(json, target) {
-		console.log(json, target);
+		try {
+			const res = await axios.post(`${endpoint.api_util}/add-json`, {
+				json,
+				target
+			});
+			return res.data;
+		} catch (e) {
+			console.log(e);
+		}
 	}
 };
 

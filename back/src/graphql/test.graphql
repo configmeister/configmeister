@@ -1,5 +1,0 @@
-mutation {
-    cfgBranch(branch: {name: "test branch", scalarValues: [], complexValues: []}) {
-        id
-    }
-}
